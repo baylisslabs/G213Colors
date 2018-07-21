@@ -10,6 +10,8 @@ Please also check out these awesome forks:
 Thanks to [derEisele](https://github.com/derEisele) and [JeroenED](https://github.com/JeroenED) for creating this!
 
 ## What it does
+This is a small port of [G213Colors](https://github.com/SebiTimeWaster/G213Colors) which uses hidapi rather than pyusb. This alllows allows the utility work under macOS.
+
 G213Colors lets you set the color(s) and certain effects of the illuminated keys on a G213 keyboard under Linux.
 
 Since Logitech is mostly ignoring the Linux market with their "Logitech Gaming Software" but i wanted to use my expensive new keyboard also under linux without tolerating the color cycling animation all the time i decided to reverse engineer their USB protocol and to write my own script to control the keyboard.
@@ -25,7 +27,7 @@ Either download the [G213Colors.py](https://raw.githubusercontent.com/SebiTimeWa
 
 ### Prerequisites
 * [Python](https://www.python.org/) >= 2.4 or 3.x (which is usually already installed)
-* [PyUSB](https://github.com/walac/pyusb) (please see their instructions on how to install)
+* [hidpai](https://github.com/signal11/hidapi) (please see their instructions on how to install)
 
 Please ignore the pcap directory, i added the pcap files i used for reverse engineering just in case someone wants to work with them. They can be opened with [Wireshark](https://en.wikipedia.org/wiki/Wireshark).
 

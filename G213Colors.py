@@ -24,10 +24,8 @@
 
 
 import sys
-import usb.core
-import usb.util
 import binascii
-
+import hid
 
 standardColorHex = 'ffb4aa'         # Standard color, i found this color to produce a white color on my G213
 idVendor         = 0x046d           # The id of the Logitech company
@@ -48,23 +46,19 @@ option           = ''
 
 def connectG():
     global device, isDetached
+
+    device = hid.device()
+
     # find G product
-    device = usb.core.find(idVendor = idVendor, idProduct = idProduct)
+    device.open(idVendor, idProduct)
+
     # if not found exit
     if device is None:
         print('USB device not found!')
         sys.exit(1)
-    # if a kernel driver is attached to the interface detach it, otherwise no data can be send
-    if device.is_kernel_driver_active(wIndex):
-        device.detach_kernel_driver(wIndex)
-        isDetached = True
 
 def disconnectG():
-    # free device resource to be able to reattach kernel driver
-    usb.util.dispose_resources(device)
-    # reattach kernel driver, otherwise special keys will not work
-    if isDetached:
-        device.attach_kernel_driver(wIndex)
+    device.close()
 
 def checkColorHex(colorHex):
     try:
@@ -90,9 +84,13 @@ def checkSpeedNum(numStr):
 
 def sendData(dataHex):
     # convert hex data to binary and send it
-    device.ctrl_transfer(bmRequestType, bmRequest, wValue, wIndex, binascii.unhexlify(dataHex))
+    data = binascii.unhexlify(dataHex)
+    wLength = len(data)
+    setup = "{:1x}{:1x}{:02x}{:02x}{:02x}".format(bmRequestType, bmRequest, wValue, wIndex, wLength)
+    device.write([ord(c) for c in setup])
+    device.write([ord(c) for c in data])
     # read back one 20-byte word, otherwise commands may not be completely executed
-    device.read(bEndpointAddress, 20)
+    device.read(20)
 
 def sendColorCommand(colorHex, field = 0):
     if checkColorHex(colorHex):
